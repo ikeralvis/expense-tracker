@@ -5,7 +5,7 @@ import TransactionForm from '@/components/dashboard/TransactionForm';
 import TransactionFilters from '@/components/dashboard/TransactionFilters';
 import TransactionsList from '@/components/dashboard/TransactionsList';
 import { getTransactions } from '@/lib/actions/transactions';
-
+  
 type SearchParams = {
   type?: 'income' | 'expense';
   accountId?: string;
