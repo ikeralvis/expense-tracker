@@ -9,9 +9,17 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Gestor Financiero Personal",
+  title: "Fintek - Gestor Financiero Personal",
   description: "Gestiona tus finanzas personales de forma simple y eficiente",
-  manifest: "/manifest.json", // Para PWA en el futuro
+  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: '/logo.png', sizes: '16x16', type: 'image/png' },
+      { url: '/logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/logo.png', sizes: '192x192', type: 'image/png' },
+      { url: '/logo.png', sizes: '512x512', type: 'image/png' },
+    ],
+  },
 };
 
 export default function RootLayout({
