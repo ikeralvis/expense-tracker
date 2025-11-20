@@ -127,12 +127,6 @@ export default function LoginPage() {
                   Recordarme
                 </label>
               </div>
-              <Link
-                href="/forgot-password"
-                className="text-sm font-medium text-primary-600 hover:text-primary-700"
-              >
-                ¿Olvidaste tu contraseña?
-              </Link>
             </div>
 
             {/* Submit Button */}
