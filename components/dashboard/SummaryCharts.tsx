@@ -17,6 +17,7 @@ type MonthlyData = {
 
 type Props = {
   monthlyData: MonthlyData;
+  className?: string;
 };
 
 const monthNames = [
@@ -24,7 +25,7 @@ const monthNames = [
   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
 ];
 
-export default function SummaryCharts({ monthlyData }: Props) {
+export default function SummaryCharts({ monthlyData, className }: Props) {
   // Safety check
   if (!monthlyData) return null;
 
@@ -71,7 +72,7 @@ export default function SummaryCharts({ monthlyData }: Props) {
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className={className || "grid grid-cols-1 lg:grid-cols-2 gap-6"}>
       {/* Gráfico de Ingresos vs Gastos Mensuales */}
       <div className="bg-white rounded-xl shadow-soft p-6">
         <h3 className="text-lg font-bold text-neutral-900 mb-6">

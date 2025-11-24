@@ -2,6 +2,16 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+
+const TransactionSchema = z.object({
+  type: z.enum(['income', 'expense']),
+  accountId: z.string().uuid(),
+  categoryId: z.string().uuid(),
+  amount: z.number().positive(),
+  description: z.string().optional(),
+  transactionDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)'),
+});
 
 export async function createTransaction(formData: {
   type: 'income' | 'expense';
@@ -21,65 +31,71 @@ export async function createTransaction(formData: {
     return { error: 'No autenticado' };
   }
 
+  // Validate input with Zod
+  const validation = TransactionSchema.safeParse(formData);
+  if (!validation.success) {
+    return { error: 'Datos inválidos: ' + validation.error.issues.map(e => e.message).join(', ') };
+  }
+
   try {
-      // Obtener el saldo actual ANTES de insertar la transacción para
-      // calcular el saldo esperado (esto evita confusión con el trigger
-      // que actualiza el saldo en la base de datos inmediatamente después
-      // del INSERT).
-      const { data: accountBefore } = await supabase
-        .from('accounts')
-        .select('current_balance')
-        .eq('id', formData.accountId)
-        .single();
+    // Obtener el saldo actual ANTES de insertar la transacción para
+    // calcular el saldo esperado (esto evita confusión con el trigger
+    // que actualiza el saldo en la base de datos inmediatamente después
+    // del INSERT).
+    const { data: accountBefore } = await supabase
+      .from('accounts')
+      .select('current_balance')
+      .eq('id', formData.accountId)
+      .single();
 
-      const beforeBalance = accountBefore?.current_balance ?? null;
-      const expectedNewBalance = beforeBalance === null
-        ? null
-        : (formData.type === 'income' ? beforeBalance + formData.amount : beforeBalance - formData.amount);
+    const beforeBalance = accountBefore?.current_balance ?? null;
+    const expectedNewBalance = beforeBalance === null
+      ? null
+      : (formData.type === 'income' ? beforeBalance + formData.amount : beforeBalance - formData.amount);
 
-      console.log('Balance before insert:', beforeBalance);
-      console.log('Expected balance after insert:', expectedNewBalance);
+    console.log('Balance before insert:', beforeBalance);
+    console.log('Expected balance after insert:', expectedNewBalance);
 
-      // Insertar transacción (el trigger en la BD ajustará el saldo)
-      const { data: transaction, error } = await supabase
-        .from('transactions')
-        .insert([
-          {
-            user_id: user.id,
-            type: formData.type,
-            account_id: formData.accountId,
-            category_id: formData.categoryId,
-            amount: formData.amount,
-            description: formData.description || null,
-            transaction_date: formData.transactionDate,
-          },
-        ])
-        .select()
-        .single();
+    // Insertar transacción (el trigger en la BD ajustará el saldo)
+    const { data: transaction, error } = await supabase
+      .from('transactions')
+      .insert([
+        {
+          user_id: user.id,
+          type: formData.type,
+          account_id: formData.accountId,
+          category_id: formData.categoryId,
+          amount: formData.amount,
+          description: formData.description || null,
+          transaction_date: formData.transactionDate,
+        },
+      ])
+      .select()
+      .single();
 
-      if (error) throw error;
+    if (error) throw error;
 
-      // Leer el saldo DESPUÉS de la inserción para confirmar lo que hizo el trigger
-      const { data: accountAfter } = await supabase
-        .from('accounts')
-        .select('current_balance')
-        .eq('id', formData.accountId)
-        .single();
+    // Leer el saldo DESPUÉS de la inserción para confirmar lo que hizo el trigger
+    const { data: accountAfter } = await supabase
+      .from('accounts')
+      .select('current_balance')
+      .eq('id', formData.accountId)
+      .single();
 
-      console.log('Balance after insert (DB):', accountAfter?.current_balance);
+    console.log('Balance after insert (DB):', accountAfter?.current_balance);
 
-      // Nota: La base de datos tiene un trigger (`update_account_balance`) que
-      // actualiza el saldo de la cuenta cuando se inserta una transacción.
-      // Para evitar que el saldo se actualice doblemente (desde el trigger
-      // y desde la aplicación), no realizamos la actualización aquí.
-      console.log('Skipping application-level account update because DB trigger handles it');
+    // Nota: La base de datos tiene un trigger (`update_account_balance`) que
+    // actualiza el saldo de la cuenta cuando se inserta una transacción.
+    // Para evitar que el saldo se actualice doblemente (desde el trigger
+    // y desde la aplicación), no realizamos la actualización aquí.
+    console.log('Skipping application-level account update because DB trigger handles it');
 
-      revalidatePath('/dashboard/transacciones');
-      revalidatePath('/dashboard');
-      revalidatePath('/dashboard/cuentas');
+    revalidatePath('/dashboard/transacciones');
+    revalidatePath('/dashboard');
+    revalidatePath('/dashboard/cuentas');
 
-      return { data: transaction, error: null };
-    } catch (err: any) {
+    return { data: transaction, error: null };
+  } catch (err: any) {
     console.error('Error creating transaction:', err);
     return { error: err.message, data: null };
   }
@@ -134,7 +150,7 @@ export async function deleteTransaction(transactionId: string) {
     revalidatePath('/dashboard/transacciones');
     revalidatePath('/dashboard');
     revalidatePath('/dashboard/cuentas');
-    
+
     return { error: null };
   } catch (err: any) {
     console.error('Error deleting transaction:', err);

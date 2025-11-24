@@ -74,7 +74,8 @@ export default function ExportButton({ data }: Props) {
             </button>
 
             {/* Hidden Report View */}
-            <div style={{ position: 'fixed', top: 0, left: 0, zIndex: -50, opacity: 0, pointerEvents: 'none' }}>
+            {/* Hidden Report View - Rendered off-screen but visible to html-to-image */}
+            <div style={{ position: 'fixed', top: 0, left: '-9999px', width: '800px' }}>
                 <ReportView ref={reportRef} {...data} />
             </div>
         </>

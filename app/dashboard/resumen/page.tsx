@@ -5,6 +5,7 @@ import SummaryFilters from '@/components/dashboard/SummaryFilters';
 import SummaryCharts from '@/components/dashboard/SummaryCharts';
 import MonthlyCategoryTable from '@/components/dashboard/MonthlyCategoryTable';
 import ExportButton from '@/components/dashboard/ExportButton';
+import ExportCSVButton from '@/components/dashboard/ExportCSVButton';
 import { getSummaryData, getAvailableYears } from '@/lib/actions/summary';
 import { getBudgetProgress } from '@/lib/actions/budgets';
 
@@ -125,7 +126,8 @@ export default async function ResumenPage({
                         Análisis detallado de tus finanzas en {currentYear}
                     </p>
                 </div>
-                <div>
+                <div className="flex gap-2">
+                    <ExportCSVButton monthlyData={monthlyData} year={currentYear} />
                     <ExportButton data={reportData} />
                 </div>
             </div>
