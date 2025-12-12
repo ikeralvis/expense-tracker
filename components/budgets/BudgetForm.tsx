@@ -13,7 +13,7 @@ type Props = {
     categories: Category[];
 };
 
-export default function BudgetForm({ categories }: Props) {
+export default function BudgetForm({ categories }: Readonly<Props>) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
@@ -30,8 +30,8 @@ export default function BudgetForm({ categories }: Props) {
             return;
         }
 
-        const amount = parseFloat(formData.amount);
-        if (isNaN(amount) || amount <= 0) {
+        const amount = Number.parseFloat(formData.amount);
+        if (Number.isNaN(amount) || amount <= 0) {
             setError('El importe debe ser mayor a 0');
             return;
         }

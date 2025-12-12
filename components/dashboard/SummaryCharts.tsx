@@ -16,8 +16,8 @@ type MonthlyData = {
 };
 
 type Props = {
-  monthlyData: MonthlyData;
-  className?: string;
+  readonly monthlyData: MonthlyData;
+  readonly className?: string;
 };
 
 const monthNames = [
@@ -31,7 +31,7 @@ export default function SummaryCharts({ monthlyData, className }: Props) {
   // Preparar datos para el gráfico de barras
   const barChartData = useMemo(() => {
     return Object.keys(data).map((monthKey) => {
-      const month = parseInt(monthKey);
+      const month = Number.parseInt(monthKey);
       return {
         month: monthNames[month],
         income: data[month].income,
@@ -78,12 +78,12 @@ export default function SummaryCharts({ monthlyData, className }: Props) {
           📊 Ingresos vs Gastos Mensuales
         </h3>
         <div className="space-y-4">
-          {barChartData.map((data, index) => {
+          {barChartData.map((data) => {
             const incomeWidth = (data.income / maxValue) * 100;
             const expenseWidth = (data.expense / maxValue) * 100;
 
             return (
-              <div key={index}>
+              <div key={data.month}>
                 <div className="flex items-center justify-between text-sm mb-1">
                   <span className="font-medium text-neutral-700 w-12">{data.month}</span>
                   <div className="flex-1 mx-3 space-y-1">
@@ -152,11 +152,11 @@ export default function SummaryCharts({ monthlyData, className }: Props) {
               const percentage = (category.amount / totalCategoryExpense) * 100;
 
               return (
-                <div key={index}>
+                <div key={category.name}>
                   <div className="flex items-center justify-between text-sm mb-1">
                     <div className="flex items-center space-x-2 flex-1 min-w-0">
                       <div
-                        className="w-3 h-3 rounded-full flex-shrink-0"
+                        className="w-3 h-3 rounded-full shrink-0"
                         style={{ backgroundColor: colors[index % colors.length] }}
                       />
                       <span className="font-medium text-neutral-700 truncate">

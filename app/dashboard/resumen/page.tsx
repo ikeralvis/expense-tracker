@@ -16,9 +16,9 @@ type SearchParams = {
 
 export default async function ResumenPage({
     searchParams,
-}: {
+}: Readonly<{
     searchParams: Promise<SearchParams>;
-}) {
+}>) {
     const supabase = await createClient();
     const resolvedSearchParams = await searchParams;
 
@@ -36,7 +36,7 @@ export default async function ResumenPage({
 
     // Año actual o del query param
     const currentYear = resolvedSearchParams.year
-        ? parseInt(resolvedSearchParams.year)
+        ? Number.parseInt(resolvedSearchParams.year)
         : new Date().getFullYear();
 
     // Obtener categorías

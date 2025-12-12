@@ -5,17 +5,37 @@ import { vi, describe, it, expect } from 'vitest';
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 
 // Mockear createClient para devolver un supabase stub
+// Helper functions to reduce nesting
+const singleInsert = async (rows: any[]) => ({ data: rows[0], error: null });
+const selectInsert = (rows: any[]) => ({
+  single: () => singleInsert(rows),
+});
+const insert = (rows: any[]) => ({
+  select: () => selectInsert(rows),
+});
+
+const singleSelect = async () => ({ data: { current_balance: 100 } });
+const eqSelect = (_: string, __: any) => ({
+  single: singleSelect,
+});
+const select = (cols?: string) => ({
+  eq: eqSelect,
+});
+
+const eqUpdate = () => ({});
+const update = () => ({
+  eq: eqUpdate,
+});
+
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn(async () => {
     const mock = {
       auth: { getUser: async () => ({ data: { user: { id: 'user-1' } } }) },
-      from: (table: string) => {
-        return {
-          insert: (rows: any[]) => ({ select: () => ({ single: async () => ({ data: rows[0], error: null }) }) }),
-          select: (cols?: string) => ({ eq: (_: string, __: any) => ({ single: async () => ({ data: { current_balance: 100 } }) }) }),
-          update: () => ({ eq: () => ({}) }),
-        };
-      },
+      from: (table: string) => ({
+        insert,
+        select,
+        update,
+      }),
     };
     return mock;
   }),

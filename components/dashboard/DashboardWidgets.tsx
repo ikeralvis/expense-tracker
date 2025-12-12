@@ -11,14 +11,14 @@ const monthNames = [
 ];
 
 const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    const monthIndex = parseInt(label.split('-')[1]) - 1;
+  if (active && payload?.length) {
+    const monthIndex = Number.parseInt(label.split('-')[1]) - 1;
     const monthName = monthNames[monthIndex];
     return (
       <div className="bg-white border border-neutral-200 rounded-lg p-3 shadow-lg">
         <p className="font-semibold text-neutral-900">{monthName}</p>
-        {payload.map((entry: any, index: number) => (
-          <p key={index} style={{ color: entry.color }}>
+        {payload.map((entry: any) => (
+          <p key={entry.dataKey} style={{ color: entry.color }}>
             {entry.dataKey === 'income' ? 'Ingreso' : 'Gasto'}: {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(entry.value)}
           </p>
         ))}
@@ -28,7 +28,14 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export default function DashboardWidgets({ totalBalance, monthlyIncome, monthlyExpense, monthlySeries }: { totalBalance: number; monthlyIncome: number; monthlyExpense: number; monthlySeries: Monthly[] }) {
+type DashboardWidgetsProps = Readonly<{
+  totalBalance: number;
+  monthlyIncome: number;
+  monthlyExpense: number;
+  monthlySeries: Monthly[];
+}>;
+
+export default function DashboardWidgets({ totalBalance, monthlyIncome, monthlyExpense, monthlySeries }: DashboardWidgetsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div className="bg-white rounded-xl shadow-soft p-6">
@@ -48,7 +55,7 @@ export default function DashboardWidgets({ totalBalance, monthlyIncome, monthlyE
                 tickLine={false}
                 tick={{ fontSize: 10, fill: '#6b7280' }}
                 tickFormatter={(value) => {
-                  const monthIndex = parseInt(value.split('-')[1]) - 1;
+                  const monthIndex = Number.parseInt(value.split('-')[1]) - 1;
                   return monthNames[monthIndex];
                 }}
               />
@@ -71,7 +78,7 @@ export default function DashboardWidgets({ totalBalance, monthlyIncome, monthlyE
                 tickLine={false}
                 tick={{ fontSize: 10, fill: '#6b7280' }}
                 tickFormatter={(value) => {
-                  const monthIndex = parseInt(value.split('-')[1]) - 1;
+                  const monthIndex = Number.parseInt(value.split('-')[1]) - 1;
                   return monthNames[monthIndex];
                 }}
               />

@@ -20,7 +20,7 @@ type Props = {
   categories: Category[];
 };
 
-export default function TransactionForm({ accounts, categories }: Props) {
+export default function TransactionForm({ accounts, categories }: Readonly<Props>) {
   const today = new Date().toISOString().split('T')[0];
   
   const [loading, setLoading] = useState(false);
@@ -48,8 +48,8 @@ export default function TransactionForm({ accounts, categories }: Props) {
       return;
     }
 
-    const amount = parseFloat(formData.amount);
-    if (isNaN(amount) || amount <= 0) {
+    const amount = Number.parseFloat(formData.amount);
+    if (Number.isNaN(amount) || amount <= 0) {
       setError('El importe debe ser mayor a 0');
       return;
     }

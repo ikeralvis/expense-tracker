@@ -10,7 +10,7 @@ type Props = {
     categories: any[];
 };
 
-export default function RecurringTransactionsList({ recurringTransactions, accounts, categories }: Props) {
+export default function RecurringTransactionsList({ recurringTransactions, accounts, categories }: Readonly<Props>) {
     const [isCreating, setIsCreating] = useState(false);
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
 
@@ -33,26 +33,27 @@ export default function RecurringTransactionsList({ recurringTransactions, accou
             type: formData.type as 'income' | 'expense',
             accountId: formData.accountId,
             categoryId: formData.categoryId,
-            amount: parseFloat(formData.amount),
+            amount: Number.parseFloat(formData.amount),
             description: formData.description,
             frequency: formData.frequency as 'monthly' | 'weekly' | 'yearly',
             startDate: formData.startDate,
         });
 
-        if (!result.error) {
-            setIsCreating(false);
-            setFormData({
-                type: 'expense',
-                accountId: '',
-                categoryId: '',
-                amount: '',
-                description: '',
-                frequency: 'monthly',
-                startDate: new Date().toISOString().split('T')[0],
-            });
-        } else {
+        if (result.error) {
             alert(result.error);
+            return;
         }
+
+        setIsCreating(false);
+        setFormData({
+            type: 'expense',
+            accountId: '',
+            categoryId: '',
+            amount: '',
+            description: '',
+            frequency: 'monthly',
+            startDate: new Date().toISOString().split('T')[0],
+        });
     };
 
     const handleDelete = async (id: string) => {

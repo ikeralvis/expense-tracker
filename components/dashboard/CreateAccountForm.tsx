@@ -10,7 +10,7 @@ type Bank = {
 };
 
 type Props = {
-  banks: Bank[];
+  readonly banks: ReadonlyArray<Bank>;
 };
 
 export default function CreateAccountForm({ banks }: Props) {
@@ -37,8 +37,8 @@ export default function CreateAccountForm({ banks }: Props) {
       return;
     }
 
-    const balance = parseFloat(formData.initialBalance);
-    if (isNaN(balance)) {
+    const balance = Number.parseFloat(formData.initialBalance);
+    if (Number.isNaN(balance)) {
       setError('El saldo inicial debe ser un número válido');
       return;
     }

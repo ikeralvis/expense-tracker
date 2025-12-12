@@ -41,7 +41,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -59,7 +59,7 @@ export default function LoginPage() {
             {/* Error Message */}
             {error && (
               <div className="bg-accent-50 border border-accent-200 rounded-xl p-4 flex items-start space-x-3">
-                <AlertCircle className="h-5 w-5 text-accent-600 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="h-5 w-5 text-accent-600 shrink-0 mt-0.5" />
                 <p className="text-sm text-accent-800">{error}</p>
               </div>
             )}
