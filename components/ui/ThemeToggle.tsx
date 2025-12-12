@@ -4,22 +4,31 @@ import { Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function ThemeToggle() {
-    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+        try {
+            if (
+                localStorage.theme === 'dark' ||
+                (!('theme' in localStorage) &&
+                    window.matchMedia('(prefers-color-scheme: dark)').matches)
+            ) {
+                return 'dark';
+            }
+        } catch {
+                // ignore (e.g., during server-like environments)
+            }
+        return 'light';
+    });
 
     useEffect(() => {
-        // Check local storage or system preference
-        if (
-            localStorage.theme === 'dark' ||
-            (!('theme' in localStorage) &&
-                window.matchMedia('(prefers-color-scheme: dark)').matches)
-        ) {
-            setTheme('dark');
+        // Sync document class and localStorage without calling setState here
+        if (theme === 'dark') {
             document.documentElement.classList.add('dark');
+            try { localStorage.theme = 'dark'; } catch {}
         } else {
-            setTheme('light');
             document.documentElement.classList.remove('dark');
+            try { localStorage.theme = 'light'; } catch {}
         }
-    }, []);
+    }, [theme]);
 
     const toggleTheme = () => {
         if (theme === 'light') {

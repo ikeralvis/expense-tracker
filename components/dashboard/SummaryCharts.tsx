@@ -26,26 +26,25 @@ const monthNames = [
 ];
 
 export default function SummaryCharts({ monthlyData, className }: Props) {
-  // Safety check
-  if (!monthlyData) return null;
+  const data = monthlyData ?? {};
 
   // Preparar datos para el gráfico de barras
   const barChartData = useMemo(() => {
-    return Object.keys(monthlyData).map((monthKey) => {
+    return Object.keys(data).map((monthKey) => {
       const month = parseInt(monthKey);
       return {
         month: monthNames[month],
-        income: monthlyData[month].income,
-        expense: monthlyData[month].expense,
+        income: data[month].income,
+        expense: data[month].expense,
       };
     });
-  }, [monthlyData]);
+  }, [data]);
 
   // Preparar datos para el gráfico de categorías (pie chart simulado con barras horizontales)
   const categoryData = useMemo(() => {
     const categories: { [key: string]: number } = {};
 
-    Object.values(monthlyData).forEach((monthData) => {
+    Object.values(data).forEach((monthData) => {
       Object.entries(monthData.categories).forEach(([category, data]) => {
         if (!categories[category]) {
           categories[category] = 0;
@@ -58,7 +57,7 @@ export default function SummaryCharts({ monthlyData, className }: Props) {
       .map(([name, amount]) => ({ name, amount }))
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 10); // Top 10 categorías
-  }, [monthlyData]);
+  }, [data]);
 
   const maxIncome = Math.max(...barChartData.map(d => d.income), 1);
   const maxExpense = Math.max(...barChartData.map(d => d.expense), 1);

@@ -146,7 +146,7 @@ export async function processRecurringTransaction(id: string) {
         if (insertError) throw insertError;
 
         // 3. Update next_run_date
-        let nextDate = new Date(recurring.next_run_date);
+        const nextDate = new Date(recurring.next_run_date);
         if (recurring.frequency === 'monthly') {
             nextDate.setMonth(nextDate.getMonth() + 1);
         } else if (recurring.frequency === 'weekly') {

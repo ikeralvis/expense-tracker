@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { CreditCard, ArrowLeft, Wallet } from 'lucide-react';
+import { CreditCard, Wallet } from 'lucide-react';
 import CreateAccountForm from '@/components/dashboard/CreateAccountForm';
 import AccountCard from '@/components/dashboard/AccountCard';
 import { getAccountStats } from '@/lib/actions/accounts';

@@ -51,7 +51,7 @@ export async function GET(request: Request) {
 
             // Calculate next run date
             const currentRunDate = new Date(rt.next_run_date);
-            let nextDate = new Date(currentRunDate);
+            const nextDate = new Date(currentRunDate);
 
             switch (rt.frequency) {
                 case 'weekly':
