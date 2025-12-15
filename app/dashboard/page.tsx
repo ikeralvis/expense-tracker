@@ -134,6 +134,19 @@ export default async function DashboardPage() {
               <span className="text-sm text-neutral-500">Gestionar recurrentes</span>
             </div>
           </Link>
+
+          <Link
+            href="/dashboard/analisis"
+            className="flex flex-col items-start justify-between p-6 bg-white rounded-3xl border border-neutral-200/60 shadow-card hover:shadow-medium hover:-translate-y-1 transition-all duration-300 group h-40"
+          >
+            <div className="p-3 bg-emerald-50 rounded-2xl text-emerald-600 group-hover:scale-110 transition-transform duration-300">
+              <TrendingUp className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="block font-bold text-neutral-900 text-lg">Análisis IA</span>
+              <span className="text-sm text-neutral-500">Predicción de gastos</span>
+            </div>
+          </Link>
         </div>
       </div>
 

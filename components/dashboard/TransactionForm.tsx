@@ -189,11 +189,25 @@ export default function TransactionForm({ accounts, categories }: Readonly<Props
                 className="w-full appearance-none bg-neutral-50 border border-neutral-200 rounded-2xl px-5 py-4 text-lg font-medium text-neutral-900 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 transition-all cursor-pointer hover:bg-neutral-100"
               >
                 <option value="">Seleccionar cuenta...</option>
-                {accounts.map((account) => (
-                  <option key={account.id} value={account.id}>
-                    {account.name} · {account.banks.name}
-                  </option>
-                ))}
+                {(() => {
+                  // Group accounts by bank
+                  const groupedAccounts = accounts.reduce((acc, account) => {
+                    const bankName = account.banks?.name || 'Otros';
+                    if (!acc[bankName]) acc[bankName] = [];
+                    acc[bankName].push(account);
+                    return acc;
+                  }, {} as Record<string, typeof accounts>);
+
+                  return Object.entries(groupedAccounts).map(([bankName, bankAccounts]) => (
+                    <optgroup key={bankName} label={bankName}>
+                      {bankAccounts.map((account) => (
+                        <option key={account.id} value={account.id}>
+                          {account.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ));
+                })()}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-neutral-400">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -265,10 +279,10 @@ export default function TransactionForm({ accounts, categories }: Readonly<Props
             type="submit"
             disabled={loading}
             className={`w-full py-5 rounded-2xl text-xl font-bold text-white shadow-lg hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-3 ${loading
-                ? 'bg-neutral-400 cursor-not-allowed'
-                : formData.type === 'expense'
-                  ? 'bg-neutral-900 hover:bg-neutral-800'
-                  : 'bg-primary-600 hover:bg-primary-500'
+              ? 'bg-neutral-400 cursor-not-allowed'
+              : formData.type === 'expense'
+                ? 'bg-neutral-900 hover:bg-neutral-800'
+                : 'bg-primary-600 hover:bg-primary-500'
               }`}
           >
             {loading ? (

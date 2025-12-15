@@ -46,7 +46,7 @@ export default function TransactionFilters({ accounts, categories, onFilterChang
 
   const handleApply = () => {
     const activeFilters: any = {};
-    
+
     if (filters.type) activeFilters.type = filters.type;
     if (filters.accountId) activeFilters.accountId = filters.accountId;
     if (filters.categoryId) activeFilters.categoryId = filters.categoryId;
@@ -130,7 +130,7 @@ export default function TransactionFilters({ accounts, categories, onFilterChang
                 <option value="">Todas</option>
                 {accounts.map((account) => (
                   <option key={account.id} value={account.id}>
-                    {account.name}
+                    {account.name} - {account.banks?.name || 'Banco desconocido'}
                   </option>
                 ))}
               </select>

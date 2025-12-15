@@ -12,7 +12,8 @@ import {
   Wallet,
   Menu,
   X,
-  PieChart
+  PieChart,
+  Activity
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -26,7 +27,7 @@ const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
   { name: 'Cuentas', href: '/dashboard/cuentas', icon: <CreditCard className="h-5 w-5" /> },
   { name: 'Transacciones', href: '/dashboard/transacciones', icon: <TrendingUp className="h-5 w-5" /> },
-  { name: 'Presupuestos', href: '/dashboard/presupuestos', icon: <PieChart className="h-5 w-5" /> },
+  { name: 'Análisis', href: '/dashboard/analisis', icon: <Activity className="h-5 w-5" /> },
   { name: 'Resumen', href: '/dashboard/resumen', icon: <FileText className="h-5 w-5" /> },
   { name: 'Configuración', href: '/dashboard/configuracion', icon: <Settings className="h-5 w-5" /> },
 ];
@@ -68,8 +69,8 @@ export default function DashboardNav({ userName, userEmail }: Props) {
                     key={item.name}
                     href={item.href}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${active
-                        ? 'bg-primary-50 text-primary-700'
-                        : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
+                      ? 'bg-primary-50 text-primary-700'
+                      : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
                       }`}
                   >
                     {item.icon}
@@ -113,45 +114,59 @@ export default function DashboardNav({ userName, userEmail }: Props) {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-neutral-200 shadow-lg">
-          <div className="container mx-auto px-4 py-4 space-y-2">
-            {navigation.map((item) => {
-              const active = isActive(item.href);
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors ${active
+        <div className="md:hidden fixed inset-0 z-50 bg-white/95 backdrop-blur-sm transition-all duration-300">
+          <div className="flex flex-col h-full">
+            {/* Header with Close Button */}
+            <div className="flex items-center justify-between px-4 h-16 border-b border-neutral-100">
+              <span className="text-xl font-bold text-primary-900">FinTek</span>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 text-neutral-500 hover:bg-neutral-100 rounded-full"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Menu Items */}
+            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
+              {navigation.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center space-x-3 px-4 py-4 rounded-xl text-lg font-medium transition-colors ${active
                       ? 'bg-primary-50 text-primary-700'
                       : 'text-neutral-600 hover:bg-neutral-50'
-                    }`}
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                </Link>
-              );
-            })}
+                      }`}
+                  >
+                    {item.icon}
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
 
-            {/* Mobile User Info */}
-            <div className="pt-4 mt-4 border-t border-neutral-200">
-              <div className="px-4 py-2">
-                <p className="text-sm font-medium text-neutral-900">
-                  {userName || 'Usuario'}
-                </p>
-                <p className="text-xs text-neutral-500">{userEmail}</p>
+              {/* Mobile User Info & Logout */}
+              <div className="mt-8 pt-8 border-t border-neutral-100">
+                <div className="px-4 mb-4">
+                  <p className="font-bold text-neutral-900 text-lg">
+                    {userName || 'Usuario'}
+                  </p>
+                  <p className="text-sm text-neutral-500">{userEmail}</p>
+                </div>
+                <form action="/api/auth/signout" method="post">
+                  <button
+                    type="submit"
+                    className="w-full flex items-center space-x-3 px-4 py-4 text-red-600 hover:bg-red-50 rounded-xl font-medium transition-colors"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    <span>Cerrar Sesión</span>
+                  </button>
+                </form>
               </div>
-              <form action="/api/auth/signout" method="post" className="mt-2">
-                <button
-                  type="submit"
-                  className="w-full flex items-center space-x-3 px-4 py-3 text-accent-600 hover:bg-accent-50 rounded-lg font-medium transition-colors"
-                >
-                  <LogOut className="h-5 w-5" />
-                  <span>Cerrar Sesión</span>
-                </button>
-              </form>
             </div>
           </div>
         </div>

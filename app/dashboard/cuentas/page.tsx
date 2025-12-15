@@ -90,7 +90,7 @@ export default async function CuentasPage() {
                     <CreateAccountForm banks={banks || []} />
                 </div>
 
-                {/* Lista de Cuentas */}
+                {/* Lista de Cuentas Agrupada por Banco */}
                 {accountsWithStats.length === 0 ? (
                     <div className="bg-white/60 backdrop-blur-md rounded-3xl shadow-card border border-white/50 p-12 text-center">
                         <CreditCard className="h-16 w-16 text-neutral-300 mx-auto mb-4" />
@@ -102,21 +102,36 @@ export default async function CuentasPage() {
                         </p>
                     </div>
                 ) : (
-                    <div>
-                        <h2 className="text-xl font-bold text-neutral-900 mb-6 tracking-tight flex items-center">
-                            <div className="w-1 h-6 bg-blue-600 rounded-full mr-3"></div>
-                            Todas tus Cuentas ({accountsWithStats.length})
-                        </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {accountsWithStats.map((account) => (
-                                <AccountCard
-                                    key={account.id}
-                                    account={account}
-                                    monthlyIncome={account.monthlyIncome}
-                                    monthlyExpense={account.monthlyExpense}
-                                />
-                            ))}
-                        </div>
+                    <div className="space-y-12">
+                        {/* Logic to group accounts */}
+                        {(() => {
+                            type AccountWithStats = typeof accountsWithStats[number];
+                            const grouped = accountsWithStats.reduce<Record<string, AccountWithStats[]>>((acc, account) => {
+                                const bankName = account.banks?.name || 'Otros';
+                                if (!acc[bankName]) acc[bankName] = [];
+                                acc[bankName].push(account);
+                                return acc;
+                            }, {});
+
+                            return Object.entries(grouped).map(([bankName, bankAccounts]) => (
+                                <div key={bankName}>
+                                    <h2 className="text-xl font-bold text-neutral-900 mb-6 tracking-tight flex items-center">
+                                        <div className="w-1 h-6 bg-blue-600 rounded-full mr-3"></div>
+                                        {bankName}
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {bankAccounts.map((account) => (
+                                            <AccountCard
+                                                key={account.id}
+                                                account={account}
+                                                monthlyIncome={account.monthlyIncome}
+                                                monthlyExpense={account.monthlyExpense}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            ));
+                        })()}
                     </div>
                 )}
             </div>
