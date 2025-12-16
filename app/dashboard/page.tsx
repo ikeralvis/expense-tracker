@@ -17,23 +17,34 @@ export default async function DashboardPage() {
     redirect('/login');
   }
 
-  // Obtener estadísticas básicas
-  const { data: accounts } = await supabase
-    .from('accounts')
-    .select('current_balance')
-    .eq('user_id', user.id);
-
-  const totalBalance = accounts?.reduce((sum, acc) => sum + acc.current_balance, 0) || 0;
-
-  // Obtener transacciones del mes actual
   const now = new Date();
   const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+  const year = now.getFullYear();
 
-  const { data: transactions } = await supabase
-    .from('transactions')
-    .select('type, amount')
-    .eq('user_id', user.id)
-    .gte('transaction_date', firstDayOfMonth);
+  // Parallelize data fetching for better performance
+  const [accountsResult, transactionsResult, summaryDataResult] = await Promise.all([
+    // Estadisiticas basicas (Cuentas)
+    supabase
+      .from('accounts')
+      .select('current_balance')
+      .eq('user_id', user.id),
+
+    // Transacciones del mes actual
+    supabase
+      .from('transactions')
+      .select('type, amount')
+      .eq('user_id', user.id)
+      .gte('transaction_date', firstDayOfMonth),
+
+    // Resumen anual y transacciones recientes via server action
+    getSummaryData(year)
+  ]);
+
+  const accounts = accountsResult.data;
+  const transactions = transactionsResult.data;
+  const summaryData = summaryDataResult.data;
+
+  const totalBalance = accounts?.reduce((sum, acc) => sum + acc.current_balance, 0) || 0;
 
   const monthlyIncome = transactions
     ?.filter(t => t.type === 'income')
@@ -43,9 +54,6 @@ export default async function DashboardPage() {
     ?.filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0) || 0;
 
-  // Summary per month (use summary action to get monthly series and recent transactions)
-  const year = new Date().getFullYear();
-  const { data: summaryData } = await getSummaryData(year);
   const monthlySeries = [] as any[];
   if (summaryData?.monthlyData) {
     // monthlyData indexed by month number 0-11

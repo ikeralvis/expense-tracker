@@ -28,29 +28,39 @@ export default async function TransaccionesPage({
     redirect('/login');
   }
 
-  // Obtener cuentas
-  const { data: accounts } = await supabase
-    .from('accounts')
-    .select(`
-      id,
-      name,
-      banks (
-        name
-      )
-    `)
-    .eq('user_id', user.id)
-    .order('name', { ascending: true });
+  // Parallelize data fetching
+  const [accountsResult, categoriesResult, resolvedSearchParams] = await Promise.all([
+    // Obtener cuentas
+    supabase
+      .from('accounts')
+      .select(`
+        id,
+        name,
+        banks (
+          name
+        )
+      `)
+      .eq('user_id', user.id)
+      .order('name', { ascending: true }),
 
-  // Obtener categorías
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('name', { ascending: true });
+    // Obtener categorías
+    supabase
+      .from('categories')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('name', { ascending: true }),
 
-  const resolvedSearchParams = await Promise.resolve(searchParams);
+    // Resolver params
+    Promise.resolve(searchParams)
+  ]);
 
-  // Obtener transacciones con filtros
+  const accounts = accountsResult.data;
+  const categories = categoriesResult.data;
+
+  // Obtener transacciones con filtros (esto depende de los params, asi que lo hacemos despues o en paralelo si no dependiera)
+  // Como getTransactions es una Server Action que hace su propia query, la llamamos aqui.
+  // Podriamos paralelizarla tambien si 'resolvedSearchParams' no fuera async (que en Next 15 lo es, pero aqui lo resolvimos arriba).
+
   const filters: any = {};
   if (resolvedSearchParams.type) filters.type = resolvedSearchParams.type;
   if (resolvedSearchParams.accountId) filters.accountId = resolvedSearchParams.accountId;
@@ -99,7 +109,7 @@ export default async function TransaccionesPage({
         <div className="lg:col-span-8 space-y-6">
           {/* Filtros arriba */}
           <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-card border border-white/50 p-6">
-            
+
             <TransactionFiltersClient
               accounts={
                 (accounts || []).map((account: any) => ({

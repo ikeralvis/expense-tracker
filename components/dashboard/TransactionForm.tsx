@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, AlertCircle, ArrowUpCircle, ArrowDownCircle, Calendar, FileText, Wallet, Tag } from 'lucide-react';
 import { createTransaction } from '@/lib/actions/transactions';
 
@@ -33,6 +33,27 @@ export default function TransactionForm({ accounts, categories }: Readonly<Props
     description: '',
     transactionDate: today,
   });
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('transactionFormDraft');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setFormData(prev => ({ ...prev, ...parsed }));
+      } catch (e) {
+        console.error('Failed to parse draft', e);
+      }
+    }
+  }, []);
+
+  // Save to localStorage on change
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      localStorage.setItem('transactionFormDraft', JSON.stringify(formData));
+    }, 500); // Debounce saves
+    return () => clearTimeout(handler);
+  }, [formData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,9 +90,12 @@ export default function TransactionForm({ accounts, categories }: Readonly<Props
       setError(result.error);
       setLoading(false);
     } else {
+      // Clear draft on success
+      localStorage.removeItem('transactionFormDraft');
+
       setFormData({
         type: 'expense',
-        accountId: formData.accountId,
+        accountId: formData.accountId, // Keep account selected for convenience? Or reset? Logic said reset.
         categoryId: '',
         amount: '',
         description: '',

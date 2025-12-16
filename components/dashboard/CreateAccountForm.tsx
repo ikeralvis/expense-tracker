@@ -123,8 +123,8 @@ export default function CreateAccountForm({ banks }: Props) {
               {/* 1. Saldo Inicial Gigante */}
               <div className="text-center">
                 <label htmlFor="initialBalance" className="block text-sm font-medium text-neutral-400 uppercase tracking-wider mb-2">Saldo Inicial</label>
-                <div className="relative inline-block max-w-[200px] mx-auto">
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 text-4xl font-bold text-blue-500">€</span>
+                <div className="relative inline-block w-full max-w-[300px] mx-auto">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-4xl font-bold text-blue-500">€</span>
                   <input
                     id="initialBalance"
                     name="initialBalance"
@@ -134,7 +134,7 @@ export default function CreateAccountForm({ banks }: Props) {
                     onChange={handleChange}
                     required
                     placeholder="0.00"
-                    className="w-full bg-transparent text-center text-6xl font-black focus:outline-none placeholder-neutral-200 p-2 text-neutral-900"
+                    className="w-full bg-transparent text-center text-5xl sm:text-6xl font-black focus:outline-none placeholder-neutral-200 p-2 pl-12 text-neutral-900"
                   />
                 </div>
               </div>

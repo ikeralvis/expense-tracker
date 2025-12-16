@@ -17,5 +17,26 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "/dashboard-preview.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/dashboard-preview.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": [
+    "finance",
+    "productivity",
+    "utilities"
+  ],
+  "orientation": "portrait",
+  "prefer_related_applications": false
 }

@@ -44,7 +44,7 @@ export default function LandingPage() {
 
           <h1 className="text-5xl md:text-7xl font-extrabold text-neutral-950 mb-8 tracking-tight leading-[1.1]">
             Tus finanzas, <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-indigo-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600">
               en piloto automático.
             </span>
           </h1>
